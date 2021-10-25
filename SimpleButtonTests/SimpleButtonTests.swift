@@ -9,7 +9,7 @@
 import UIKit
 import XCTest
 
-import SimpleButton
+@testable import SimpleButton
 
 class SimpleButtonTests: XCTestCase {
     
@@ -248,10 +248,10 @@ class SimpleButtonTests: XCTestCase {
     func testStateChange() {
         let button = SimpleButton(type: .custom)
         
-        XCTAssertEqual(button.state, UIControlState.normal, "state should be set to Normal")
+        XCTAssertEqual(button.state, UIControl.State.normal, "state should be set to Normal")
         
         button.isHighlighted = true
-        XCTAssertEqual(button.state, UIControlState.highlighted, "state should be set to Highlighted")
+        XCTAssertEqual(button.state, UIControl.State.highlighted, "state should be set to Highlighted")
         
         button.isEnabled = false
         print(button.state)
@@ -263,6 +263,13 @@ class SimpleButtonTests: XCTestCase {
     }
     
     // MARK: Check correct enable / disable of userInteractionEnabled
+    private func delay() {
+        let expectation = XCTestExpectation()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 0.2)
+    }
     
     func testUserInteractionEnabled() {
         let button = SimpleButton(type: .custom)
@@ -274,47 +281,57 @@ class SimpleButtonTests: XCTestCase {
         XCTAssert(button.isUserInteractionEnabled == true, "userInteractionEnabled should be set to true")
         
         button.isLoading = true
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
 
         button.isLoading = false
+        delay()
         XCTAssert(button.isUserInteractionEnabled == true, "userInteractionEnabled should be set to true")
         
         
         button.isLoading = true
         button.isEnabled = true
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
 
         button.isEnabled = false
         button.isLoading = false
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
         
         button.isLoading = false
         button.isEnabled = true
+        delay()
         XCTAssert(button.isUserInteractionEnabled == true, "userInteractionEnabled should be set to true")
         
         button.isLoading = true
         button.isEnabled = false
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
         
         
         button.isLoading = true
         button.isEnabled = false
         button.isLoading = false
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
         
         button.isLoading = false
         button.isEnabled = true
         button.isLoading = true
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
         
         button.isEnabled = false
         button.isLoading = false
         button.isEnabled = true
+        delay()
         XCTAssert(button.isUserInteractionEnabled == true, "userInteractionEnabled should be set to true")
         
         button.isEnabled = true
         button.isLoading = true
         button.isEnabled = false
+        delay()
         XCTAssert(button.isUserInteractionEnabled == false, "userInteractionEnabled should be set to false")
     }
 }
