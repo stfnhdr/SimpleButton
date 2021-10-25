@@ -14,9 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
 
-      - name: Force XCode 12.5
-        run: sudo xcode-select -switch /Applications/Xcode_12.5.app
-
       - name: Generate xcodeproj
         run: swift package generate-xcodeproj
 
