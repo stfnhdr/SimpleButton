@@ -71,6 +71,13 @@ open class SimpleButton: UIButton {
         return [:]
     }()
     
+    private lazy var imageTintColor: [ControlState: SimpleButtonStateChangeValue<UIColor>] = {
+        if let color = self.imageView?.tintColor {
+            return [UIControl.State.normal.rawValue: SimpleButtonStateChangeValue(value: color, animated: true, animationDuration: self.defaultAnimationDuration)]
+        }
+        return [:]
+    }()
+    
     private lazy var shadowOpacities: [ControlState: SimpleButtonStateChangeValue<Float>] = {
         [UIControl.State.normal.rawValue: SimpleButtonStateChangeValue(value: self.layer.shadowOpacity, animated: true, animationDuration: self.defaultAnimationDuration)]
     }()
@@ -296,6 +303,19 @@ open class SimpleButton: UIButton {
     }
     
     /**
+     Sets the image tint color for a specific `UIControlState`
+     
+     - parameter color:    image color of button
+     - parameter state:    determines at which state that border color applies
+     - parameter animated: determines if that change in border color should animate. Default is `true`
+     - parameter animationDuration: set this value if you need a specific animation duration for this specific state change. If this is nil, the animation duration is taken from `defaultAnimationDuration`
+     */
+    open func setImageColor(_ color: UIColor, for state: UIControl.State = .normal, animated: Bool = true, animationDuration: TimeInterval? = nil) {
+        imageTintColor[state.rawValue] = SimpleButtonStateChangeValue(value: color, animated: animated, animationDuration: animationDuration ?? defaultAnimationDuration)
+        updateImageTintColor()
+    }
+    
+    /**
      Sets the spacing between `titleLabel` and `imageView`
      
      - parameter spacing: spacing between `titleLabel` and `imageView`
@@ -322,6 +342,7 @@ open class SimpleButton: UIButton {
         updateShadowOffset()
         updateShadowOpacity()
         updateShadowRadius()
+        updateImageTintColor()
     }
     
     private func updateCornerRadius() {
@@ -333,10 +354,22 @@ open class SimpleButton: UIButton {
         }
     }
     
+    private func updateImageTintColor() {
+        if let stateChange = imageTintColor[state.rawValue] ?? imageTintColor[UIControl.State.normal.rawValue], stateChange.value != imageView?.tintColor {
+            if stateChange.animated {
+                UIView.animate(withDuration: stateChange.animationDuration, animations: { [weak self] in
+                    self?.imageView?.tintColor = stateChange.value
+                })
+            } else {
+                imageView?.tintColor = stateChange.value
+            }
+        }
+    }
+    
     private func updateScale() {
         if let stateChange = buttonScales[state.rawValue] ?? buttonScales[UIControl.State.normal.rawValue], transform.a != stateChange.value, transform.b != stateChange.value {
-            let animations = {
-                self.transform = CGAffineTransform(scaleX: stateChange.value, y: stateChange.value)
+            let animations: (() -> Void) = { [weak self] in
+                self?.transform = CGAffineTransform(scaleX: stateChange.value, y: stateChange.value)
             }
             stateChange.animated && !lockAnimatedUpdate ? UIView.animate(withDuration: stateChange.animationDuration, animations: animations) : animations()
         }
@@ -489,5 +522,10 @@ open class SimpleButton: UIButton {
             animation()
             completion(true)
         }
+    }
+    
+    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        update()
     }
 }
