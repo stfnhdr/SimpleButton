@@ -38,8 +38,8 @@ open class SimpleButton: UIButton {
     
     // MARK: State values with initial values
     
-    private lazy var backgroundColors: [ControlState: SimpleButtonStateChangeValue<CGColor>] = {
-        if let color = self.backgroundColor?.cgColor {
+    private lazy var backgroundColors: [ControlState: SimpleButtonStateChangeValue<UIColor>] = {
+        if let color = self.backgroundColor {
             return [UIControl.State.normal.rawValue: SimpleButtonStateChangeValue(value: color, animated: true, animationDuration: self.defaultAnimationDuration)]
         }
         return [:]
@@ -207,7 +207,7 @@ open class SimpleButton: UIButton {
      - parameter animationDuration: set this value if you need a specific animation duration for this specific state change. If this is nil, the animation duration is taken from `defaultAnimationDuration`
      */
     open func setBackgroundColor(_ color: UIColor, for state: UIControl.State = .normal, animated: Bool = true, animationDuration: TimeInterval? = nil) {
-        backgroundColors[state.rawValue] = SimpleButtonStateChangeValue(value: color.cgColor, animated: animated, animationDuration: animationDuration ?? defaultAnimationDuration)
+        backgroundColors[state.rawValue] = SimpleButtonStateChangeValue(value: color, animated: animated, animationDuration: animationDuration ?? defaultAnimationDuration)
         updateBackgroundColor()
     }
     
@@ -376,11 +376,11 @@ open class SimpleButton: UIButton {
     }
     
     private func updateBackgroundColor() {
-        if let stateChange = backgroundColors[state.rawValue] ?? backgroundColors[UIControl.State.normal.rawValue], layer.backgroundColor == nil || UIColor(cgColor: layer.backgroundColor!) != UIColor(cgColor: stateChange.value) {
+        if let stateChange = backgroundColors[state.rawValue] ?? backgroundColors[UIControl.State.normal.rawValue], layer.backgroundColor == nil || UIColor(cgColor: layer.backgroundColor!) != stateChange.value {
             if stateChange.animated, !lockAnimatedUpdate {
                 animate(layer: layer, from: sourceLayer.backgroundColor, to: stateChange.value, forKey: "backgroundColor", duration: stateChange.animationDuration)
             }
-            layer.backgroundColor = stateChange.value
+            layer.backgroundColor = stateChange.value.cgColor
         }
     }
     
