@@ -166,7 +166,7 @@ extension When {
         let secondColor = UIColor { traitColletion in
             switch traitColletion.userInterfaceStyle {
             case .dark:
-                return UIColor.red
+                return UIColor.systemRed
             default:
                 return .red
             }
@@ -176,7 +176,7 @@ extension When {
         let thirdColor = UIColor { traitColletion in
             switch traitColletion.userInterfaceStyle {
             case .dark:
-                return UIColor.blue
+                return UIColor.systemBlue
             default:
                 return .blue
             }
