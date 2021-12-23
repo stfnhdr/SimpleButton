@@ -376,9 +376,9 @@ open class SimpleButton: UIButton {
     }
     
     private func updateBackgroundColor() {
-        if let stateChange = backgroundColors[state.rawValue] ?? backgroundColors[UIControl.State.normal.rawValue], layer.backgroundColor == nil || UIColor(cgColor: layer.backgroundColor!) != stateChange.value {
+        if let stateChange = backgroundColors[state.rawValue] ?? backgroundColors[UIControl.State.normal.rawValue], layer.backgroundColor == nil || layer.backgroundColor! != stateChange.value.cgColor {
             if stateChange.animated, !lockAnimatedUpdate {
-                animate(layer: layer, from: sourceLayer.backgroundColor, to: stateChange.value, forKey: "backgroundColor", duration: stateChange.animationDuration)
+                animate(layer: layer, from: sourceLayer.backgroundColor, to: stateChange.value.cgColor, forKey: "backgroundColor", duration: stateChange.animationDuration)
             }
             layer.backgroundColor = stateChange.value.cgColor
         }
