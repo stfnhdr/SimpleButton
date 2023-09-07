@@ -81,6 +81,13 @@ open class SimpleButton: UIButton {
     private lazy var shadowRadii: [ControlState: SimpleButtonStateChangeValue<CGFloat>] = {
         [UIControl.State.normal.rawValue: SimpleButtonStateChangeValue(value: self.layer.shadowRadius, animated: true, animationDuration: self.defaultAnimationDuration)]
     }()
+    
+    private lazy var defaultLoadingView: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .white)
+        activityIndicator.hidesWhenStopped = false
+        activityIndicator.alpha = 0
+        return activityIndicator
+    }()
 
     // MARK: Overrides
 
@@ -455,11 +462,7 @@ open class SimpleButton: UIButton {
     // MARK: - LoadingView
 
     private func setDefaultLoadingView() {
-        let activityIndicator = UIActivityIndicatorView(style: .white)
-        activityIndicator.startAnimating()
-        activityIndicator.hidesWhenStopped = false
-        activityIndicator.alpha = 0
-        loadingView = activityIndicator
+        loadingView = defaultLoadingView
     }
 
     private func addLoadingViewAsSubView() {
@@ -500,6 +503,10 @@ open class SimpleButton: UIButton {
         } else {
             animation()
         }
+        
+        if loadingView === defaultLoadingView {
+            defaultLoadingView.startAnimating()
+        }
     }
 
     private func hideLoadingView(animaded: Bool) {
@@ -517,6 +524,10 @@ open class SimpleButton: UIButton {
         } else {
             animation()
             completion(true)
+        }
+        
+        if loadingView === defaultLoadingView {
+            defaultLoadingView.stopAnimating()
         }
     }
 
